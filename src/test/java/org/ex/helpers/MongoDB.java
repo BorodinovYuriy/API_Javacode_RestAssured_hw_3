@@ -8,11 +8,19 @@ import org.bson.Document;
 import org.ex.config.PropertiesLoader;
 
 public class MongoDB {
-    private final MongoClient mongoClient;
+    private static MongoClient mongoClient;
     private final MongoDatabase database;
 
     public MongoDB() {
-        this.mongoClient = MongoClients.create(PropertiesLoader.getMongoUri());
+        if (mongoClient == null) {
+            synchronized (MongoDB.class) {
+                if (mongoClient == null) {
+                    mongoClient = MongoClients.create(
+                            PropertiesLoader.getMongoUri()
+                    );
+                }
+            }
+        }
         this.database = mongoClient.getDatabase(PropertiesLoader.getMongoDbName());
     }
     public MongoCollection<Document> getCollection(String collectionName) {
@@ -24,7 +32,10 @@ public class MongoDB {
         return userCollection.find(query).first();
     }
 
-    public void close() {
-        mongoClient.close();
+    public static void closeMongoClient() {
+        if (mongoClient != null) {
+            mongoClient.close();
+            mongoClient = null;
+        }
     }
 }
