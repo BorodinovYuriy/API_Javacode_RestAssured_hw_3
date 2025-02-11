@@ -56,4 +56,7 @@ public class PropertiesLoader {
     public static String getMongoCollectionTemplates() {
         return properties.getProperty("mongoCollectionTemplates");
     }
+    public static int getRegisterUserId() {
+        return Integer.parseInt(properties.getProperty("user_id"));
+    }
 }

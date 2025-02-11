@@ -14,6 +14,9 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 @Slf4j
 public class ApiJCTests extends BaseApiJCTest {
 
@@ -41,21 +44,44 @@ public class ApiJCTests extends BaseApiJCTest {
     }
 
     @Test()
-    @DisplayName("Добавление нового интервью")
-    public void addInterview(){
+    @DisplayName("Добавление нового интервью и его редактирование")
+    public void addEditInterview(){
         String json = "{\"name\": \"TestingInterview\"}";
         Response response = PostReqApi.post(json, "/api/interview", token);
 
+        String jsonSchemaPath = "jsonschema/interview.json";
+        response.then()
+            .body(matchesJsonSchemaInClasspath(jsonSchemaPath));
+
+        int id = response.jsonPath().getInt("data._id");
+
+        String jsonEdit = String.format(
+                "{\"_id\": %d," +
+                        " \"name\": \"RedactInterview\"," +
+                        " \"user\": %d," +
+                        " \"questions\": []," +
+                        " \"cd\": \"\"," +
+                        " \"sale\": \"1035\"," +
+                        " \"problemQuestions\": \"0\"," +
+                        " \"questionsSize\": \"0\"}",
+                id,
+                PropertiesLoader.getRegisterUserId()
+        );
+
+        Response respEdit = PostReqApi.put(jsonEdit, "/api/interview", token);
+        respEdit.then()
+                .body(matchesJsonSchemaInClasspath(jsonSchemaPath));
+
         Document document = mongo.getDocQueryInMongo(
                 "interviews",
-                response.jsonPath().getInt("data._id"),
+                id,
                 "_id");
 
         Assertions.assertEquals(
-                response.jsonPath().getString("data.name"),
+                respEdit.jsonPath().getString("data.name"),
                 document.get("name"));
 
-        log.info(" // addInterview test passed");
+        log.info(" // addRedactInterview test passed");
     }
 
     @Test

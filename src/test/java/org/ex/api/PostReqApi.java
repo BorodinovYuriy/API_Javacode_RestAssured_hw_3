@@ -43,4 +43,16 @@ public class PostReqApi {
                 .extract()
                 .response();
     }
+    public static <T> Response put(T data, String path, String token) {
+        return given()
+                .spec(ApiRequestSpecification.getSpecUrlJson())
+                .header("Authorization",token)
+                .body(data)
+                .when()
+                .put(path)
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
 }

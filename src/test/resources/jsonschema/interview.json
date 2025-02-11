@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "user": {
+          "type": "integer"
+        },
+        "questions": {
+          "type": "array",
+          "items": {}
+        },
+        "cd": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "sale": {
+          "type": "string"
+        },
+        "problemQuestions": {
+          "type": "string"
+        },
+        "questionsSize": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
