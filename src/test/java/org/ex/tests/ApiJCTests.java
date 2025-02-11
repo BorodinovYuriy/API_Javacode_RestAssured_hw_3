@@ -27,10 +27,14 @@ public class ApiJCTests extends BaseApiJCTest {
         Response response = PostReqApi.post(user, "/api/user-auth1", token);
         System.out.println("STATUSCODE --- "+response.statusCode());
 
-    mongo.deleteDocumentById(
-            PropertiesLoader.getMongoCollectionUsers(),
-            response.jsonPath().getInt("data._id")
-    );
+        if(response.statusCode() == 200){
+            mongo.deleteDocumentById(
+                    PropertiesLoader.getMongoCollectionUsers(),
+                    response.jsonPath().getInt("data._id")
+            );
+        }
+
+
         logger.info("add new user - тест пройден.");
     }
     @Test
