@@ -5,7 +5,6 @@ import com.ex.dtos.newuser.CustomData;
 import com.ex.dtos.newuser.NewUserDTO;
 import com.github.javafaker.Faker;
 import org.ex.helpers.ExcelDataReader;
-import org.ex.tests.ApiJCTests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +38,16 @@ public class DataProviders {
         return faker.lorem().sentence(5);
     }
 
-    public static Stream<Object[]> excelDataProvider() {
+    public static Stream<Object[]> excelPositive() {
+        return getSheet("positive");
+    }
+    public static Stream<Object[]> excelNegative() {
+        return getSheet("negative");
+    }
+
+    private static Stream<Object[]> getSheet(String sheetName){
         try {
             String filePath = "src/test/resources/xlsl/adduserdata.xlsx";
-            String sheetName = "Sheet1";
             List<Object[]> data = ExcelDataReader.readDataFromExcel(filePath, sheetName);
 
             return data.stream()
@@ -78,8 +83,6 @@ public class DataProviders {
 
                         customData.setSalesStatus(convertToString(row[9]));
                         userDTO.setCustomData(customData);
-
-                        logger.info("Создан DTO: " + userDTO);
                         return new Object[]{userDTO};
                     });
 

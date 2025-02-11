@@ -31,9 +31,10 @@ public class PostReqApi {
                 .extract()
                 .response();
     }
-    public static <T> Response post(T data, String path, int statusCode) {
+    public static <T> Response post(T data, String path,String token, int statusCode) {
         return given()
                 .spec(ApiRequestSpecification.getSpecUrlJson())
+                .header("Authorization",token)
                 .body(data)
                 .when()
                 .post(path)

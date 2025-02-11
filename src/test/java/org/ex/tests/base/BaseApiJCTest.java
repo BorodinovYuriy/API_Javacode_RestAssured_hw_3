@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BaseApiJCTest {
-    private static final Logger logger = LoggerFactory.getLogger(BaseApiJCTest.class);
 
     protected String token;
     protected MongoDB mongo;
@@ -32,7 +31,6 @@ public class BaseApiJCTest {
                 "/api/auth/login");
 
         token = response.jsonPath().getString("token");
-        logger.info("Новый token получен: {}", token);
     }
 
     @AfterAll

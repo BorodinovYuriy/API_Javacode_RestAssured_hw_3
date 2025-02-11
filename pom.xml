@@ -50,6 +50,11 @@
             <version>1.0.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.23.1</version>
+        </dependency>
 
         <!-- Logback implementation -->
         <dependency>
@@ -58,20 +63,6 @@
             <version>1.5.16</version> <!-- Используйте актуальную версию -->
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.24.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-            <version>2.11.1</version>
-        </dependency>
-
-
-
 
         <!-- JUnit Jupiter 5 -->
         <dependency>
