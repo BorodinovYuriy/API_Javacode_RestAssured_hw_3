@@ -4,7 +4,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.ex.config.PropertiesLoader;
 
 public class MongoDB {
@@ -30,6 +32,11 @@ public class MongoDB {
         MongoCollection<Document> userCollection = getCollection(collectionName);
         Document query = new Document(fieldIdInMongo, RequiredId);
         return userCollection.find(query).first();
+    }
+    public void deleteDocumentById(String collectionName, int id) {
+        MongoCollection<org.bson.Document> collection = database.getCollection(collectionName);
+        Bson query = Filters.eq("_id", id);
+        collection.deleteOne(query);
     }
 
     public static void closeMongoClient() {

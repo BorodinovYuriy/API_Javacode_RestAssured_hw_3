@@ -22,16 +22,19 @@ public class ExcelDataReader {
         Sheet sheet = workbook.getSheet(sheetName);
 
         Iterator<Row> rowIterator = sheet.iterator();
-        // Пропустите ряд заголовка, если присутствует
+        // Пропустите ряд заголовка
         if (rowIterator.hasNext()) {
-            rowIterator.next(); // Пропустить ряд заголовка
+            rowIterator.next();
         }
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            Object[] rowData = new Object[row.getLastCellNum()]; // Массив для хранения данных
+            // Массив для хранения данных
+            Object[] rowData = new Object[row.getLastCellNum()];
+
             for (int i = 0; i < row.getLastCellNum(); i++) {
-                Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK); // Use CREATE_NULL_AS_BLANK
+                // Use CREATE_NULL_AS_BLANK
+                Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                 switch (cell.getCellType()) {
                     case STRING:
                         rowData[i] = cell.getStringCellValue();
@@ -47,13 +50,14 @@ public class ExcelDataReader {
                         rowData[i] = cell.getBooleanCellValue();
                         break;
                     case FORMULA:
-                        rowData[i] = cell.getCellFormula(); // Или оценить формулу
+                        // Формула - не пригодится
+                        rowData[i] = cell.getCellFormula();
                         break;
                     case BLANK:
-                        rowData[i] = null; // Обрабатывать пустые ячейки
+                        rowData[i] = null;
                         break;
                     default:
-                        rowData[i] = null; // Обрабатывать другие типы ячеек по мере необходимости
+                        rowData[i] = null;
                 }
             }
             data.add(rowData);

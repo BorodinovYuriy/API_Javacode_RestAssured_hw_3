@@ -23,20 +23,14 @@ public class ApiJCTests extends BaseApiJCTest {
     @ParameterizedTest(name = "Добавление нового пользователя (Итер {index}), Arg: {arguments}")
     @MethodSource(value = "org.ex.data.DataProviders#excelDataProvider")
     public void addNewUser(NewUserDTO user){
-        System.out.println("Тестируемый UserDTO: " + user);
+        System.out.println("UserDTO: " + user);
+        Response response = PostReqApi.post(user, "/api/user-auth1", token);
+        System.out.println("STATUSCODE --- "+response.statusCode());
 
-
-
-//        Response response = PostReqApi.post(user, "/api/user-auth1", token);
-//
-//        Assertions.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
-//                "Content-Type должен содержать application/json");
-//
-//        Document userDocument = mongo.getDocQueryInMongo(
-//                PropertiesLoader.getMongoCollectionUsers(),
-//                response.jsonPath().getInt("data._id"),
-//                "_id");
-
+    mongo.deleteDocumentById(
+            PropertiesLoader.getMongoCollectionUsers(),
+            response.jsonPath().getInt("data._id")
+    );
         logger.info("add new user - тест пройден.");
     }
     @Test
