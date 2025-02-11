@@ -25,15 +25,11 @@ public class ApiJCTests extends BaseApiJCTest {
     @Execution(ExecutionMode.SAME_THREAD)
     public void addNewUserPositiveExel(NewUserDTO user) throws InterruptedException {
         Response response = PostReqApi.post(user, "/api/user-auth1", token);
-        System.out.println(response.asString());
-        Thread.sleep(100L);
-
-        if(response.statusCode() == 200){
             mongo.deleteDocumentById(
                     PropertiesLoader.getMongoCollectionUsers(),
                     response.jsonPath().getInt("data._id")
             );
-        }
+
         log.info(" // addNewUserPositiveExel test passed");
     }
     @ParameterizedTest(name = "Добавление user negative (Итер {index}), Arg: {arguments}")
@@ -47,9 +43,9 @@ public class ApiJCTests extends BaseApiJCTest {
     @DisplayName("Добавление нового интервью и его редактирование")
     public void addEditInterview(){
         String json = "{\"name\": \"TestingInterview\"}";
-        Response response = PostReqApi.post(json, "/api/interview", token);
-
         String jsonSchemaPath = "jsonschema/interview.json";
+
+        Response response = PostReqApi.post(json, "/api/interview", token);
         response.then()
             .body(matchesJsonSchemaInClasspath(jsonSchemaPath));
 
@@ -81,7 +77,7 @@ public class ApiJCTests extends BaseApiJCTest {
                 respEdit.jsonPath().getString("data.name"),
                 document.get("name"));
 
-        log.info(" // addRedactInterview test passed");
+        log.info(" // addEditInterview test passed");
     }
 
     @Test
@@ -90,7 +86,5 @@ public class ApiJCTests extends BaseApiJCTest {
     public void test3(){}
     @Test
     public void test4(){}
-    @Test
-    public void test5(){}
 
 }
