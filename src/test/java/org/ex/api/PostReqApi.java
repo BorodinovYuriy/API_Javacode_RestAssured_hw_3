@@ -43,7 +43,7 @@ public class PostReqApi {
                 .extract()
                 .response();
     }
-    public static <T> Response put(T data, String path, String token) {
+    public static <T> Response put(T data, String path, String token, int statusCode) {
         return given()
                 .spec(ApiRequestSpecification.getSpecUrlJson())
                 .header("Authorization",token)
@@ -51,7 +51,7 @@ public class PostReqApi {
                 .when()
                 .put(path)
                 .then()
-                .statusCode(200)
+                .statusCode(statusCode)
                 .extract()
                 .response();
     }

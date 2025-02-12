@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.ex.api.PostReqApi;
 import org.ex.config.PropertiesLoader;
+import org.ex.helpers.JSONHelper;
 import org.ex.tests.base.BaseApiJCTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.nio.file.Paths;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
@@ -57,14 +61,15 @@ public class ApiJCTests extends BaseApiJCTest {
                         " \"user\": %d," +
                         " \"questions\": []," +
                         " \"cd\": \"\"," +
-                        " \"sale\": \"1035\"," +
+                        " \"sale\": \"%d\"," +
                         " \"problemQuestions\": \"0\"," +
                         " \"questionsSize\": \"0\"}",
                 id,
-                PropertiesLoader.getRegisterUserId()
+                PropertiesLoader.getRegisterUserId(),
+                id
         );
 
-        Response respEdit = PostReqApi.put(jsonEdit, "/api/interview", token);
+        Response respEdit = PostReqApi.put(jsonEdit, "/api/interview", token, 200);
         respEdit.then()
                 .body(matchesJsonSchemaInClasspath(jsonSchemaPath));
 
@@ -80,11 +85,37 @@ public class ApiJCTests extends BaseApiJCTest {
         log.info(" // addEditInterview test passed");
     }
 
-    @Test
-    public void test2(){}
+    @ParameterizedTest
+    @CsvFileSource(resources = "examEdit.csv")
+    @DisplayName("Создание/изменение экзамена - не валидные данные")
+    public void noValidExamEdit(String date){
+        Response response = PostReqApi.post(
+          JSONHelper.fileToJSON(
+                  Paths.get("src/test/resources/json/addExam.json")), "/api/exam", token);
+
+        PostReqApi.put(
+                String.format("{\"cd\": \"%s\", \"_id\": %d}",
+                date,
+                response.jsonPath().getInt("data._id")),
+                "/api/exam",
+                token,
+                400);
+
+    }
     @Test
     public void test3(){}
     @Test
     public void test4(){}
+
+
+
+
+
+
+
+
+
+
+
 
 }
