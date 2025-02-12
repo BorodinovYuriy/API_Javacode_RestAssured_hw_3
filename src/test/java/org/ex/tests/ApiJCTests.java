@@ -20,14 +20,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.nio.file.Paths;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.equalTo;
 
 @Slf4j
 public class ApiJCTests extends BaseApiJCTest {
 
-    @ParameterizedTest(name = "Добавление user positive (Итер {index}), Arg: {arguments}")
+    @ParameterizedTest(name = "Добавление user positive ( - {index}), Arg: {arguments}")
     @MethodSource(value = "org.ex.data.DataProviders#excelPositive")
     @Execution(ExecutionMode.SAME_THREAD)
-    public void addNewUserPositiveExel(NewUserDTO user) throws InterruptedException {
+    public void addNewUserPositiveExel(NewUserDTO user) {
         Response response = PostReqApi.post(user, "/api/user-auth1", token);
             mongo.deleteDocumentById(
                     PropertiesLoader.getMongoCollectionUsers(),
@@ -46,12 +47,11 @@ public class ApiJCTests extends BaseApiJCTest {
     @Test()
     @DisplayName("Добавление нового интервью и его редактирование")
     public void addEditInterview(){
-        String json = "{\"name\": \"TestingInterview\"}";
-        String jsonSchemaPath = "jsonschema/interview.json";
-
-        Response response = PostReqApi.post(json, "/api/interview", token);
+        Response response = PostReqApi.post(
+                "{\"name\": \"TestingInterview\"}",
+                "/api/interview", token);
         response.then()
-            .body(matchesJsonSchemaInClasspath(jsonSchemaPath));
+            .body(matchesJsonSchemaInClasspath("jsonschema/interview.json"));
 
         int id = response.jsonPath().getInt("data._id");
 
@@ -71,7 +71,7 @@ public class ApiJCTests extends BaseApiJCTest {
 
         Response respEdit = PostReqApi.put(jsonEdit, "/api/interview", token, 200);
         respEdit.then()
-                .body(matchesJsonSchemaInClasspath(jsonSchemaPath));
+                .body(matchesJsonSchemaInClasspath("jsonschema/interview.json"));
 
         Document document = mongo.getDocQueryInMongo(
                 "interviews",
@@ -86,9 +86,9 @@ public class ApiJCTests extends BaseApiJCTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = "examEdit.csv")
+    @CsvFileSource(resources = "noValidData.csv")
     @DisplayName("Создание/изменение экзамена - не валидные данные")
-    public void noValidExamEdit(String date){
+    public void noValidExamEditData(String date){
         Response response = PostReqApi.post(
           JSONHelper.fileToJSON(
                   Paths.get("src/test/resources/json/addExam.json")), "/api/exam", token);
@@ -99,13 +99,39 @@ public class ApiJCTests extends BaseApiJCTest {
                 response.jsonPath().getInt("data._id")),
                 "/api/exam",
                 token,
-                400);
+                400)
+                .then()
+                .assertThat()
+                .body("_message", equalTo("Exam validation failed"));
 
+        log.info(" // noValidExamEdit test passed");
+    }
+    @ParameterizedTest
+    @CsvFileSource(resources = "noValidData.csv")
+    @DisplayName("Создание/изменение квиза - не валидные данные")
+    public void noValidQuizEditData(String date){
+        Response response = PostReqApi.post(
+                JSONHelper.fileToJSON(
+                        Paths.get("src/test/resources/json/addQuiz.json")), "/api/quiz", token);
+
+        PostReqApi.put(
+                        String.format("{\"cd\": \"%s\", \"_id\": %d}",
+                                date,
+                                response.jsonPath().getInt("data._id")),
+                        "/api/quiz",
+                        token,
+                        400)
+                .then()
+                .assertThat()
+                .body("_message", equalTo("Quiz validation failed"));
+
+        log.info(" // noValidQuizEdit test passed");
     }
     @Test
-    public void test3(){}
-    @Test
     public void test4(){}
+
+    @Test
+    public void test5(){}
 
 
 
