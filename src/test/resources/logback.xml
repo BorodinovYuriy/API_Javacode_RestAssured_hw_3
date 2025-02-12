@@ -1,0 +1,23 @@
+<configuration>
+
+    <!-- Фильтр для подавления логов от MongoDB connection -->
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>INFO</level>
+        <onMatch>DENY</onMatch>
+        <onMismatch>NEUTRAL</onMismatch>
+    </filter>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <!-- Отключаем логирование для Mongo -->
+    <logger name="org.mongodb.client.*" level="WARN"/>
+
+</configuration>
