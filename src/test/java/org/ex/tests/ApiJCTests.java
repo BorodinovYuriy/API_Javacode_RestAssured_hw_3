@@ -127,11 +127,22 @@ public class ApiJCTests extends BaseApiJCTest {
 
         log.info(" // noValidQuizEdit test passed");
     }
-    @Test
-    public void test4(){}
+    @ParameterizedTest(name = "Добавление уже существующего пользователя ( - {index}), Arg: {arguments}")
+    @MethodSource(value = "org.ex.data.DataProviders#excelPositive")
+    @Execution(ExecutionMode.SAME_THREAD)
+    public void addExistUser(NewUserDTO user){
+        Response response = PostReqApi.post(user, "/api/user-auth1", token);
 
-    @Test
-    public void test5(){}
+        PostReqApi.post(user, "/api/user-auth1", token,400);
+
+        mongo.deleteDocumentById(
+                PropertiesLoader.getMongoCollectionUsers(),
+                response.jsonPath().getInt("data._id")
+        );
+
+    }
+
+
 
 
 
