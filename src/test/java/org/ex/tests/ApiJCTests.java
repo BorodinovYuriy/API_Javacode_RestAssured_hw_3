@@ -118,12 +118,12 @@ public class ApiJCTests extends BaseApiJCTest {
                         String.format("{\"cd\": \"%s\", \"_id\": %d}",
                                 date,
                                 response.jsonPath().getInt("data._id")),
-                        "/api/quiz",
-                        token,
-                        400)
-                .then()
-                .assertThat()
-                .body("_message", equalTo("Quiz validation failed"));
+                                "/api/quiz",
+                                token,
+                                400)
+                        .then()
+                        .assertThat()
+                        .body("_message", equalTo("Quiz validation failed"));
 
         log.info(" // noValidQuizEdit test passed");
     }
@@ -140,6 +140,11 @@ public class ApiJCTests extends BaseApiJCTest {
                 response.jsonPath().getInt("data._id")
         );
 
+        log.info(" // addExistUser test passed");
+    }
+    @Test
+    public void test(){
+        Assertions.assertEquals(1,2);
     }
 
 
