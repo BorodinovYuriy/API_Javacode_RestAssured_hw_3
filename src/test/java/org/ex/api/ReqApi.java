@@ -6,7 +6,7 @@ import org.ex.spec.ApiRequestSpecification;
 import static io.restassured.RestAssured.given;
 
 
-public class PostReqApi {
+public class ReqApi {
     public static  <T> Response post(T data, String path) {
         return given()
                 .spec(ApiRequestSpecification.getSpecUrlJson())

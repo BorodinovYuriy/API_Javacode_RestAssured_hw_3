@@ -4,7 +4,7 @@ import com.ex.dtos.newuser.NewUserDTO;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.ex.api.PostReqApi;
+import org.ex.api.ReqApi;
 import org.ex.config.PropertiesLoader;
 import org.ex.helpers.JSONHelper;
 import org.ex.tests.base.BaseApiJCTest;
@@ -29,7 +29,7 @@ public class ApiJCTests extends BaseApiJCTest {
     @MethodSource(value = "org.ex.data.DataProviders#excelPositive")
     @Execution(ExecutionMode.SAME_THREAD)
     public void addNewUserPositiveExel(NewUserDTO user) {
-        Response response = PostReqApi.post(user, "/api/user-auth1", token);
+        Response response = ReqApi.post(user, "/api/user-auth1", token);
             mongo.deleteDocumentById(
                     PropertiesLoader.getMongoCollectionUsers(),
                     response.jsonPath().getInt("data._id")
@@ -40,14 +40,14 @@ public class ApiJCTests extends BaseApiJCTest {
     @ParameterizedTest(name = "Добавление user negative (Итер {index}), Arg: {arguments}")
     @MethodSource(value = "org.ex.data.DataProviders#excelNegative")
     public void addNewUserNegativeExel(NewUserDTO user){
-        Response response = PostReqApi.post(user, "/api/user-auth1", token, 400);
+        Response response = ReqApi.post(user, "/api/user-auth1", token, 400);
         log.info(" // addNewUserNegativeExel test passed");
     }
 
     @Test()
     @DisplayName("Добавление нового интервью и его редактирование")
     public void addEditInterview(){
-        Response response = PostReqApi.post(
+        Response response = ReqApi.post(
                 "{\"name\": \"TestingInterview\"}",
                 "/api/interview", token);
         response.then()
@@ -69,7 +69,7 @@ public class ApiJCTests extends BaseApiJCTest {
                 id
         );
 
-        Response respEdit = PostReqApi.put(jsonEdit, "/api/interview", token, 200);
+        Response respEdit = ReqApi.put(jsonEdit, "/api/interview", token, 200);
         respEdit.then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/interview.json"));
 
@@ -89,11 +89,11 @@ public class ApiJCTests extends BaseApiJCTest {
     @CsvFileSource(resources = "noValidData.csv")
     @DisplayName("Создание/изменение экзамена - не валидные данные")
     public void noValidExamEditData(String date){
-        Response response = PostReqApi.post(
+        Response response = ReqApi.post(
           JSONHelper.fileToJSON(
                   Paths.get("src/test/resources/json/addExam.json")), "/api/exam", token);
 
-        PostReqApi.put(
+        ReqApi.put(
                 String.format("{\"cd\": \"%s\", \"_id\": %d}",
                 date,
                 response.jsonPath().getInt("data._id")),
@@ -110,11 +110,11 @@ public class ApiJCTests extends BaseApiJCTest {
     @CsvFileSource(resources = "noValidData.csv")
     @DisplayName("Создание/изменение квиза - не валидные данные")
     public void noValidQuizEditData(String date){
-        Response response = PostReqApi.post(
+        Response response = ReqApi.post(
                 JSONHelper.fileToJSON(
                         Paths.get("src/test/resources/json/addQuiz.json")), "/api/quiz", token);
 
-        PostReqApi.put(
+        ReqApi.put(
                         String.format("{\"cd\": \"%s\", \"_id\": %d}",
                                 date,
                                 response.jsonPath().getInt("data._id")),
@@ -131,9 +131,9 @@ public class ApiJCTests extends BaseApiJCTest {
     @MethodSource(value = "org.ex.data.DataProviders#excelPositive")
     @Execution(ExecutionMode.SAME_THREAD)
     public void addExistUser(NewUserDTO user){
-        Response response = PostReqApi.post(user, "/api/user-auth1", token);
+        Response response = ReqApi.post(user, "/api/user-auth1", token);
 
-        PostReqApi.post(user, "/api/user-auth1", token,400);
+        ReqApi.post(user, "/api/user-auth1", token,400);
 
         mongo.deleteDocumentById(
                 PropertiesLoader.getMongoCollectionUsers(),
